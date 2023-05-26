@@ -17,6 +17,35 @@
 // DO NOT EDIT, this is an Auto-generated file from scripts/semconv/templates//templates/SemanticAttributes.ts.j2
 export const SemanticResourceAttributes = {
   /**
+   * Array of brand name and version separated by a space.
+   *
+   * Note: This value is intended to be taken from the [UA client hints API](https://wicg.github.io/ua-client-hints/#interface) (`navigator.userAgentData.brands`).
+   */
+  BROWSER_BRANDS: 'browser.brands',
+
+  /**
+  * The platform on which the browser is running.
+  *
+  * Note: This value is intended to be taken from the [UA client hints API](https://wicg.github.io/ua-client-hints/#interface) (`navigator.userAgentData.platform`). If unavailable, the legacy `navigator.platform` API SHOULD NOT be used instead and this attribute SHOULD be left unset in order for the values to be consistent.
+The list of possible values is defined in the [W3C User-Agent Client Hints specification](https://wicg.github.io/ua-client-hints/#sec-ch-ua-platform). Note that some (but not all) of these values can overlap with values in the [`os.type` and `os.name` attributes](./os.md). However, for consistency, the values in the `browser.platform` attribute should capture the exact value that the user agent provides.
+  */
+  BROWSER_PLATFORM: 'browser.platform',
+
+  /**
+   * A boolean that is true if the browser is running on a mobile device.
+   *
+   * Note: This value is intended to be taken from the [UA client hints API](https://wicg.github.io/ua-client-hints/#interface) (`navigator.userAgentData.mobile`). If unavailable, this attribute SHOULD be left unset.
+   */
+  BROWSER_MOBILE: 'browser.mobile',
+
+  /**
+   * Preferred language of the user using the browser.
+   *
+   * Note: This value is intended to be taken from the Navigator API `navigator.language`.
+   */
+  BROWSER_LANGUAGE: 'browser.language',
+
+  /**
    * Name of the cloud provider.
    */
   CLOUD_PROVIDER: 'cloud.provider',
@@ -27,9 +56,34 @@ export const SemanticResourceAttributes = {
   CLOUD_ACCOUNT_ID: 'cloud.account.id',
 
   /**
-   * The geographical region the resource is running. Refer to your provider&#39;s docs to see the available regions, for example [Alibaba Cloud regions](https://www.alibabacloud.com/help/doc-detail/40654.htm), [AWS regions](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/), [Azure regions](https://azure.microsoft.com/en-us/global-infrastructure/geographies/), or [Google Cloud regions](https://cloud.google.com/about/locations).
+   * The geographical region the resource is running.
+   *
+   * Note: Refer to your provider&#39;s docs to see the available regions, for example [Alibaba Cloud regions](https://www.alibabacloud.com/help/doc-detail/40654.htm), [AWS regions](https://aws.amazon.com/about-aws/global-infrastructure/regions_az/), [Azure regions](https://azure.microsoft.com/en-us/global-infrastructure/geographies/), [Google Cloud regions](https://cloud.google.com/about/locations), or [Tencent Cloud regions](https://www.tencentcloud.com/document/product/213/6091).
    */
   CLOUD_REGION: 'cloud.region',
+
+  /**
+  * Cloud provider-specific native identifier of the monitored cloud resource (e.g. an [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html) on AWS, a [fully qualified resource ID](https://learn.microsoft.com/en-us/rest/api/resources/resources/get-by-id) on Azure, a [full resource name](https://cloud.google.com/apis/design/resource_names#full_resource_name) on GCP).
+  *
+  * Note: On some cloud providers, it may not be possible to determine the full ID at startup,
+so it may be necessary to set `cloud.resource_id` as a span attribute instead.
+
+The exact value to use for `cloud.resource_id` depends on the cloud provider.
+The following well-known definitions MUST be used if you set this attribute and they apply:
+
+* **AWS Lambda:** The function [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html).
+  Take care not to use the &#34;invoked ARN&#34; directly but replace any
+  [alias suffix](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html)
+  with the resolved function version, as the same runtime instance may be invokable with
+  multiple different aliases.
+* **GCP:** The [URI of the resource](https://cloud.google.com/iam/docs/full-resource-names)
+* **Azure:** The [Fully Qualified Resource ID](https://docs.microsoft.com/en-us/rest/api/resources/resources/get-by-id) of the invoked function,
+  *not* the function app, having the form
+  `/subscriptions/&lt;SUBSCIPTION_GUID&gt;/resourceGroups/&lt;RG&gt;/providers/Microsoft.Web/sites/&lt;FUNCAPP&gt;/functions/&lt;FUNC&gt;`.
+  This means that a span attribute MUST be used, as an Azure function app can host multiple functions that would usually share
+  a TracerProvider.
+  */
+  CLOUD_RESOURCE_ID: 'cloud.resource_id',
 
   /**
    * Cloud regions often have multiple, isolated locations known as zones to increase availability. Availability zone represents the zone where the resource is running.
@@ -107,7 +161,22 @@ export const SemanticResourceAttributes = {
   AWS_LOG_STREAM_ARNS: 'aws.log.stream.arns',
 
   /**
-   * Container name.
+   * Time and date the release was created.
+   */
+  HEROKU_RELEASE_CREATION_TIMESTAMP: 'heroku.release.creation_timestamp',
+
+  /**
+   * Commit hash for the current release.
+   */
+  HEROKU_RELEASE_COMMIT: 'heroku.release.commit',
+
+  /**
+   * Unique identifier for the application.
+   */
+  HEROKU_APP_ID: 'heroku.app.id',
+
+  /**
+   * Container name used by container runtime.
    */
   CONTAINER_NAME: 'container.name',
 
@@ -158,31 +227,33 @@ export const SemanticResourceAttributes = {
   DEVICE_MODEL_NAME: 'device.model.name',
 
   /**
-   * The name of the single function that this runtime instance executes.
+   * The name of the device manufacturer.
    *
-   * Note: This is the name of the function as configured/deployed on the FaaS platform and is usually different from the name of the callback function (which may be stored in the [`code.namespace`/`code.function`](../../trace/semantic_conventions/span-general.md#source-code-attributes) span attributes).
+   * Note: The Android OS provides this field via [Build](https://developer.android.com/reference/android/os/Build#MANUFACTURER). iOS apps SHOULD hardcode the value `Apple`.
    */
-  FAAS_NAME: 'faas.name',
+  DEVICE_MANUFACTURER: 'device.manufacturer',
 
   /**
-  * The unique ID of the single function that this runtime instance executes.
+  * The name of the single function that this runtime instance executes.
   *
-  * Note: Depending on the cloud provider, use:
+  * Note: This is the name of the function as configured/deployed on the FaaS
+platform and is usually different from the name of the callback
+function (which may be stored in the
+[`code.namespace`/`code.function`](../../trace/semantic_conventions/span-general.md#source-code-attributes)
+span attributes).
 
-* **AWS Lambda:** The function [ARN](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html).
-Take care not to use the &#34;invoked ARN&#34; directly but replace any
-[alias suffix](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html) with the resolved function version, as the same runtime instance may be invokable with multiple
-different aliases.
-* **GCP:** The [URI of the resource](https://cloud.google.com/iam/docs/full-resource-names)
-* **Azure:** The [Fully Qualified Resource ID](https://docs.microsoft.com/en-us/rest/api/resources/resources/get-by-id).
+For some cloud providers, the above definition is ambiguous. The following
+definition of function name MUST be used for this attribute
+(and consequently the span name) for the listed cloud providers/products:
 
-On some providers, it may not be possible to determine the full ID at startup,
-which is why this field cannot be made required. For example, on AWS the account ID
-part of the ARN is not available without calling another AWS API
-which may be deemed too slow for a short-running lambda function.
-As an alternative, consider setting `faas.id` as a span attribute instead.
+* **Azure:**  The full name `&lt;FUNCAPP&gt;/&lt;FUNC&gt;`, i.e., function app name
+  followed by a forward slash followed by the function name (this form
+  can also be seen in the resource JSON for the function).
+  This means that a span attribute MUST be used, as an Azure function
+  app can host multiple functions that would usually share
+  a TracerProvider (see also the `cloud.resource_id` attribute).
   */
-  FAAS_ID: 'faas.id',
+  FAAS_NAME: 'faas.name',
 
   /**
   * The immutable version of the function being executed.
@@ -207,14 +278,14 @@ As an alternative, consider setting `faas.id` as a span attribute instead.
   FAAS_INSTANCE: 'faas.instance',
 
   /**
-   * The amount of memory available to the serverless function in MiB.
+   * The amount of memory available to the serverless function converted to Bytes.
    *
-   * Note: It&#39;s recommended to set this attribute since e.g. too little memory can easily stop a Java AWS Lambda function from working correctly. On AWS Lambda, the environment variable `AWS_LAMBDA_FUNCTION_MEMORY_SIZE` provides this information.
+   * Note: It&#39;s recommended to set this attribute since e.g. too little memory can easily stop a Java AWS Lambda function from working correctly. On AWS Lambda, the environment variable `AWS_LAMBDA_FUNCTION_MEMORY_SIZE` provides this information (which must be multiplied by 1,048,576).
    */
   FAAS_MAX_MEMORY: 'faas.max_memory',
 
   /**
-   * Unique host ID. For Cloud, this must be the instance_id assigned by the cloud provider.
+   * Unique host ID. For Cloud, this must be the instance_id assigned by the cloud provider. For non-containerized systems, this should be the `machine-id`. See the table below for the sources to use to determine the `machine-id` based on operating system.
    */
   HOST_ID: 'host.id',
 
@@ -244,7 +315,7 @@ As an alternative, consider setting `faas.id` as a span attribute instead.
   HOST_IMAGE_ID: 'host.image.id',
 
   /**
-   * The version string of the VM image as defined in [Version SpanAttributes](README.md#version-attributes).
+   * The version string of the VM image as defined in [Version Attributes](README.md#version-attributes).
    */
   HOST_IMAGE_VERSION: 'host.image.version',
 
@@ -279,9 +350,14 @@ As an alternative, consider setting `faas.id` as a span attribute instead.
   K8S_POD_NAME: 'k8s.pod.name',
 
   /**
-   * The name of the Container in a Pod template.
+   * The name of the Container from Pod specification, must be unique within a Pod. Container runtime usually uses different globally unique name (`container.name`).
    */
   K8S_CONTAINER_NAME: 'k8s.container.name',
+
+  /**
+   * Number of times the container was restarted. This attribute can be used to identify a particular container (running or stopped) within a container spec.
+   */
+  K8S_CONTAINER_RESTART_COUNT: 'k8s.container.restart_count',
 
   /**
    * The UID of the ReplicaSet.
@@ -359,7 +435,7 @@ As an alternative, consider setting `faas.id` as a span attribute instead.
   OS_NAME: 'os.name',
 
   /**
-   * The version string of the operating system as defined in [Version SpanAttributes](../../resource/semantic_conventions/README.md#version-attributes).
+   * The version string of the operating system as defined in [Version Attributes](../../resource/semantic_conventions/README.md#version-attributes).
    */
   OS_VERSION: 'os.version',
 
@@ -367,6 +443,11 @@ As an alternative, consider setting `faas.id` as a span attribute instead.
    * Process identifier (PID).
    */
   PROCESS_PID: 'process.pid',
+
+  /**
+   * Parent Process identifier (PID).
+   */
+  PROCESS_PARENT_PID: 'process.parent_pid',
 
   /**
    * The name of the process executable. On Linux based systems, can be set to the `Name` in `proc/[pid]/status`. On Windows, can be set to the base name of `GetProcessImageFileNameW`.
@@ -473,6 +554,26 @@ As an alternative, consider setting `faas.id` as a span attribute instead.
    * Additional description of the web engine (e.g. detailed version and edition information).
    */
   WEBENGINE_DESCRIPTION: 'webengine.description',
+
+  /**
+   * The name of the instrumentation scope - (`InstrumentationScope.Name` in OTLP).
+   */
+  OTEL_SCOPE_NAME: 'otel.scope.name',
+
+  /**
+   * The version of the instrumentation scope - (`InstrumentationScope.Version` in OTLP).
+   */
+  OTEL_SCOPE_VERSION: 'otel.scope.version',
+
+  /**
+   * Deprecated, use the `otel.scope.name` attribute.
+   */
+  OTEL_LIBRARY_NAME: 'otel.library.name',
+
+  /**
+   * Deprecated, use the `otel.scope.version` attribute.
+   */
+  OTEL_LIBRARY_VERSION: 'otel.library.version',
 };
 
 export const CloudProviderValues = {
@@ -484,6 +585,12 @@ export const CloudProviderValues = {
   AZURE: 'azure',
   /** Google Cloud Platform. */
   GCP: 'gcp',
+  /** Heroku Platform as a Service. */
+  HEROKU: 'heroku',
+  /** IBM Cloud. */
+  IBM_CLOUD: 'ibm_cloud',
+  /** Tencent Cloud. */
+  TENCENT_CLOUD: 'tencent_cloud',
 } as const;
 export type CloudProviderValues =
   typeof CloudProviderValues[keyof typeof CloudProviderValues];
@@ -493,6 +600,8 @@ export const CloudPlatformValues = {
   ALIBABA_CLOUD_ECS: 'alibaba_cloud_ecs',
   /** Alibaba Cloud Function Compute. */
   ALIBABA_CLOUD_FC: 'alibaba_cloud_fc',
+  /** Red Hat OpenShift on Alibaba Cloud. */
+  ALIBABA_CLOUD_OPENSHIFT: 'alibaba_cloud_openshift',
   /** AWS Elastic Compute Cloud. */
   AWS_EC2: 'aws_ec2',
   /** AWS Elastic Container Service. */
@@ -503,6 +612,10 @@ export const CloudPlatformValues = {
   AWS_LAMBDA: 'aws_lambda',
   /** AWS Elastic Beanstalk. */
   AWS_ELASTIC_BEANSTALK: 'aws_elastic_beanstalk',
+  /** AWS App Runner. */
+  AWS_APP_RUNNER: 'aws_app_runner',
+  /** Red Hat OpenShift on AWS (ROSA). */
+  AWS_OPENSHIFT: 'aws_openshift',
   /** Azure Virtual Machines. */
   AZURE_VM: 'azure_vm',
   /** Azure Container Instances. */
@@ -513,6 +626,8 @@ export const CloudPlatformValues = {
   AZURE_FUNCTIONS: 'azure_functions',
   /** Azure App Service. */
   AZURE_APP_SERVICE: 'azure_app_service',
+  /** Azure Red Hat OpenShift. */
+  AZURE_OPENSHIFT: 'azure_openshift',
   /** Google Cloud Compute Engine (GCE). */
   GCP_COMPUTE_ENGINE: 'gcp_compute_engine',
   /** Google Cloud Run. */
@@ -523,6 +638,16 @@ export const CloudPlatformValues = {
   GCP_CLOUD_FUNCTIONS: 'gcp_cloud_functions',
   /** Google Cloud App Engine (GAE). */
   GCP_APP_ENGINE: 'gcp_app_engine',
+  /** Red Hat OpenShift on Google Cloud. */
+  GCP_OPENSHIFT: 'gcp_openshift',
+  /** Red Hat OpenShift on IBM Cloud. */
+  IBM_CLOUD_OPENSHIFT: 'ibm_cloud_openshift',
+  /** Tencent Cloud Cloud Virtual Machine (CVM). */
+  TENCENT_CLOUD_CVM: 'tencent_cloud_cvm',
+  /** Tencent Cloud Elastic Kubernetes Service (EKS). */
+  TENCENT_CLOUD_EKS: 'tencent_cloud_eks',
+  /** Tencent Cloud Serverless Cloud Function (SCF). */
+  TENCENT_CLOUD_SCF: 'tencent_cloud_scf',
 } as const;
 export type CloudPlatformValues =
   typeof CloudPlatformValues[keyof typeof CloudPlatformValues];
@@ -549,6 +674,8 @@ export const HostArchValues = {
   PPC32: 'ppc32',
   /** 64-bit PowerPC. */
   PPC64: 'ppc64',
+  /** IBM z/Architecture. */
+  S390X: 's390x',
   /** 32-bit x86. */
   X86: 'x86',
 } as const;
@@ -573,7 +700,7 @@ export const OsTypeValues = {
   HPUX: 'hpux',
   /** AIX (Advanced Interactive eXecutive). */
   AIX: 'aix',
-  /** Oracle Solaris. */
+  /** SunOS, Oracle Solaris. */
   SOLARIS: 'solaris',
   /** IBM z/OS. */
   Z_OS: 'z_os',
@@ -601,6 +728,8 @@ export const TelemetrySdkLanguageValues = {
   RUBY: 'ruby',
   /** webjs. */
   WEBJS: 'webjs',
+  /** swift. */
+  SWIFT: 'swift',
 } as const;
 export type TelemetrySdkLanguageValues =
   typeof TelemetrySdkLanguageValues[keyof typeof TelemetrySdkLanguageValues];
