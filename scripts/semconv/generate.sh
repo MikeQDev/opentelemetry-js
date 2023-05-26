@@ -3,9 +3,10 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOT_DIR="${SCRIPT_DIR}/../../"
 
-# freeze the spec version to make SpanAttributess generation reproducible
-SPEC_VERSION=v1.7.0
-GENERATOR_VERSION=0.7.0
+# freeze the spec & generator tools versions to make SemanticAttributes generation reproducible
+SEMCONV_VERSION=1.19.0
+SPEC_VERSION=v$SEMCONV_VERSION
+GENERATOR_VERSION=0.18.0
 
 cd ${SCRIPT_DIR}
 
@@ -20,10 +21,11 @@ git reset --hard FETCH_HEAD
 cd ${SCRIPT_DIR}
 
 docker run --rm \
-  -v ${SCRIPT_DIR}/opentelemetry-specification/semantic_conventions/trace:/source \
+  -v ${SCRIPT_DIR}/opentelemetry-specification/semantic_conventions:/source \
   -v ${SCRIPT_DIR}/templates:/templates \
   -v ${ROOT_DIR}/packages/opentelemetry-semantic-conventions/src/trace/:/output \
   otel/semconvgen:${GENERATOR_VERSION} \
+  --only span,event,attribute_group,scope \
   -f /source \
   code \
   --template /templates/SemanticAttributes.ts.j2 \
@@ -31,10 +33,11 @@ docker run --rm \
   -Dclass=SemanticAttributes
 
 docker run --rm \
-  -v ${SCRIPT_DIR}/opentelemetry-specification/semantic_conventions/resource:/source \
+  -v ${SCRIPT_DIR}/opentelemetry-specification/semantic_conventions:/source \
   -v ${SCRIPT_DIR}/templates:/templates \
   -v ${ROOT_DIR}/packages/opentelemetry-semantic-conventions/src/resource/:/output \
   otel/semconvgen:${GENERATOR_VERSION} \
+  --only resource \
   -f /source \
   code \
   --template /templates/SemanticAttributes.ts.j2 \
